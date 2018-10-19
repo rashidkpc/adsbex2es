@@ -23,14 +23,12 @@ function indexFlightData() {
           lon: ac.Long,
         };
 
-        console.log(ac);
-
         es.index({
           index: 'adsb',
           type: 'ac',
           id: `${ac.Id}-${ac.PosTime}`,
           body: ac,
-        }).then(console.log);
+        });
       });
       return true;
     });
