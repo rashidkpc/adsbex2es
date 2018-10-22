@@ -28,7 +28,7 @@ function indexFlightData() {
           type: 'ac',
           id: `${ac.Id}-${ac.PosTime}`,
           body: ac,
-        });
+        }).then(() => process.stdout.write('.'));
       });
       return true;
     });
