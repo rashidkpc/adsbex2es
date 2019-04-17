@@ -22,7 +22,8 @@ function indexFlightData() {
           lat: ac.Lat,
           lon: ac.Long,
         };
-
+        ac.Spd = Math.round(ac.Spd);
+        
         es.index({
           index: 'adsb',
           type: 'ac',
