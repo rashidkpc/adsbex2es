@@ -9,7 +9,11 @@ const es = new elasticsearch.Client({
 function fetchFlightData() {
   return get(
     'http://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?lat=33.433638&lng=-112.008113&fDstL=0&fDstU=100'
-  ).then(resp => resp.data.acList);
+  )
+    .then(resp => resp.data.acList)
+    .catch(e => {
+      console.log('FLIGHT FAILURE', e);
+    });
 }
 
 function indexFlightData() {
@@ -22,20 +26,24 @@ function indexFlightData() {
           lat: ac.Lat,
           lon: ac.Long,
         };
+        ac.Spd = Math.round(ac.Spd);
 
         es.index({
           index: 'adsb',
-          type: 'ac',
           id: `${ac.Id}-${ac.PosTime}`,
+          type: '_doc',
           body: ac,
-        }).then(() => process.stdout.write('.'));
+        })
+          .then(() => process.stdout.write('.'))
+          .catch(e => console.log('INDEXING FAILURE', e));
       });
+
       return true;
     });
 }
 
 function go() {
-  indexFlightData().then(() => setTimeout(go, 5000));
+  indexFlightData().then(() => setTimeout(go, 2000));
 }
 
 es.indices
@@ -46,14 +54,15 @@ es.indices
         number_of_shards: 1,
       },
       mappings: {
-        ac: {
-          properties: {
-            location: { type: 'geo_point' },
-            '@timestamp': { type: 'date' },
-          },
+        properties: {
+          location: { type: 'geo_point' },
+          '@timestamp': { type: 'date' },
         },
       },
     },
   })
   .then(go)
-  .catch(go);
+  .catch(e => {
+    console.log('MAPPING FAILURE', e);
+    go();
+  });
