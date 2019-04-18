@@ -18,15 +18,17 @@ function indexFlightData() {
     .then(list => {
       list.forEach(ac => {
         ac['@timestamp'] = new Date(ac.PosTime).getTime();
+
         ac.location = {
           lat: ac.Lat,
           lon: ac.Long,
         };
+
         ac.Spd = Math.round(ac.Spd);
-        
+
         es.index({
           index: 'adsb',
-          type: 'ac',
+          type: '_doc',
           id: `${ac.Id}-${ac.PosTime}`,
           body: ac,
         }).then(() => process.stdout.write('.'));
@@ -36,7 +38,8 @@ function indexFlightData() {
 }
 
 function go() {
-  indexFlightData().then(() => setTimeout(go, 5000));
+  const again = () => setTimeout(go, 5000)
+  indexFlightData().then(again).catch(again);
 }
 
 es.indices
@@ -47,14 +50,11 @@ es.indices
         number_of_shards: 1,
       },
       mappings: {
-        ac: {
-          properties: {
-            location: { type: 'geo_point' },
-            '@timestamp': { type: 'date' },
-          },
+        properties: {
+          location: { type: 'geo_point' },
+          '@timestamp': { type: 'date' },
         },
       },
     },
   })
-  .then(go)
-  .catch(go);
+  .then(go).catch(go)
