@@ -1,1 +1,3 @@
-This is my personal node app seed. Don't use it. Or do. Whatever makes you feel better.
+# adsbex2es
+
+Loads data from adsbexchange.com into Elasticsearch 7.0
