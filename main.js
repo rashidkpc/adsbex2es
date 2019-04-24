@@ -6,10 +6,11 @@ const es = new elasticsearch.Client({
   host: 'localhost:9200',
 });
 
+const URL = 'https://global.adsbexchange.com/VirtualRadar/AircraftList.json?ldv=636917136118593865&stm=1556117415828&lat=51.45315114582281&lng=-0.193634033203125&fNBnd=33.7465492854683&fEBnd=-111.51760876178743&fSBnd=33.0201182768143&fWBnd=-112.4281007051468&trFmt=fa'
+//const URL = 'http://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?lat=33.433638&lng=-112.008113&fDstL=0&fDstU=100'
+
 function fetchFlightData() {
-  return get(
-    'http://public-api.adsbexchange.com/VirtualRadar/AircraftList.json?lat=33.433638&lng=-112.008113&fDstL=0&fDstU=100'
-  ).then(resp => resp.data.acList);
+  return get(URL).then(resp => resp.data.acList);
 }
 
 function indexFlightData() {
