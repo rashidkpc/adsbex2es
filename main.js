@@ -15,10 +15,9 @@ function fetchFlightData() {
 
 function indexFlightData() {
   return fetchFlightData()
-    .then(list => sortBy(list, 'Lat'))
     .then(list => {
       list.forEach(ac => {
-        ac['@timestamp'] = new Date(ac.PosTime).getTime();
+        ac['@timestamp'] = new Date(ac.PosTime).toISOString();
 
         ac.location = {
           lat: ac.Lat,
@@ -32,7 +31,7 @@ function indexFlightData() {
           type: '_doc',
           id: `${ac.Id}-${ac.PosTime}`,
           body: ac,
-        });
+        }).catch(() => { });
       });
       return true;
     });
