@@ -32,14 +32,14 @@ function indexFlightData() {
           type: '_doc',
           id: `${ac.Id}-${ac.PosTime}`,
           body: ac,
-        }).then(() => process.stdout.write('.'));
+        });
       });
       return true;
     });
 }
 
 function go() {
-  const again = () => setTimeout(go, 5000)
+  const again = () => setTimeout(go, 10000)
   indexFlightData().then(again).catch(again);
 }
 
